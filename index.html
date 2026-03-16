@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>What Kind of Thinker Are You?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f9f7f4;
+    --surface: #ffffff;
+    --border: #e8e4de;
+    --border-strong: #ccc8c0;
+    --text-primary: #1a1814;
+    --text-secondary: #6b6860;
+    --text-muted: #a09d98;
+    --accent: #1a1814;
+    --accent-light: #f0ede8;
+    --selected-bg: #1a1814;
+    --selected-text: #f9f7f4;
+    --highlight: #e8e0d4;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text-primary);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 100;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    height: 56px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .nav-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 15px;
+    letter-spacing: 0.02em;
+    color: var(--text-primary);
+  }
+  .nav-count {
+    font-size: 12px;
+    color: var(--text-muted);
+    letter-spacing: 0.06em;
+  }
+
+  /* MAIN */
+  main {
+    flex: 1;
+    padding-top: 56px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding-bottom: 4rem;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 620px;
+    padding: 0 1.5rem;
+  }
+
+  /* SCREENS */
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  /* INTRO */
+  .intro-wrap {
+    padding-top: 5rem;
+    animation: fadeUp 0.5s ease both;
+  }
+  .eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 1.25rem;
+    font-weight: 400;
+  }
+  .intro-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(36px, 6vw, 52px);
+    font-weight: 400;
+    line-height: 1.12;
+    margin-bottom: 1.5rem;
+    color: var(--text-primary);
+  }
+  .intro-title em {
+    font-style: italic;
+    color: var(--text-secondary);
+  }
+  .intro-body {
+    font-size: 16px;
+    color: var(--text-secondary);
+    line-height: 1.75;
+    max-width: 480px;
+    margin-bottom: 2.5rem;
+    font-weight: 300;
+  }
+  .intro-meta {
+    display: flex; gap: 2rem; margin-bottom: 2.5rem;
+  }
+  .intro-stat {
+    display: flex; flex-direction: column; gap: 2px;
+  }
+  .intro-stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    color: var(--text-primary);
+  }
+  .intro-stat-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .intro-divider {
+    width: 48px; height: 1px;
+    background: var(--border-strong);
+    margin-bottom: 2.5rem;
+  }
+  .btn-start {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: var(--accent);
+    color: var(--selected-text);
+    border: none;
+    padding: 14px 28px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .btn-start:hover { opacity: 0.85; }
+  .btn-start .arrow { font-size: 16px; transition: transform 0.2s; }
+  .btn-start:hover .arrow { transform: translateX(3px); }
+
+  /* PROGRESS */
+  .progress-wrap {
+    padding: 2.5rem 0 2rem;
+  }
+  .progress-track {
+    height: 1px;
+    background: var(--border);
+    position: relative;
+    margin-bottom: 1rem;
+  }
+  .progress-fill {
+    position: absolute; top: 0; left: 0; height: 100%;
+    background: var(--accent);
+    transition: width 0.4s ease;
+  }
+  .progress-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  /* QUESTION */
+  .q-wrap { animation: fadeUp 0.35s ease both; }
+  .q-category {
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+    font-weight: 400;
+  }
+  .q-text {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(20px, 4vw, 26px);
+    font-weight: 400;
+    line-height: 1.4;
+    color: var(--text-primary);
+    margin-bottom: 2.25rem;
+  }
+
+  /* OPTIONS */
+  .options { display: flex; flex-direction: column; gap: 10px; margin-bottom: 2.5rem; }
+
+  .opt {
+    position: relative;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 16px 20px 16px 52px;
+    cursor: pointer;
+    transition: border-color 0.18s, background 0.18s, transform 0.12s;
+    display: flex; align-items: flex-start;
+    font-size: 15px;
+    color: var(--text-primary);
+    line-height: 1.55;
+    font-weight: 300;
+    text-align: left;
+  }
+  .opt:hover {
+    border-color: var(--border-strong);
+    background: #fcfbf9;
+    transform: translateX(2px);
+  }
+  .opt-letter {
+    position: absolute;
+    left: 18px; top: 17px;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    color: var(--text-muted);
+    transition: color 0.18s;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  /* SELECTED STATE — clear visible highlight */
+  .opt.selected {
+    background: var(--selected-bg);
+    border-color: var(--selected-bg);
+    color: var(--selected-text);
+    transform: translateX(0);
+  }
+  .opt.selected .opt-letter {
+    color: rgba(249,247,244,0.5);
+  }
+  .opt.selected:hover {
+    background: #2a2622;
+    border-color: #2a2622;
+  }
+
+  /* NAV BUTTONS */
+  .nav-btns {
+    display: flex; justify-content: space-between; align-items: center;
+    padding-bottom: 2rem;
+  }
+  .btn-ghost {
+    background: none; border: 1px solid var(--border);
+    padding: 10px 22px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px; font-weight: 400;
+    color: var(--text-secondary);
+    cursor: pointer;
+    letter-spacing: 0.04em;
+    transition: border-color 0.18s, color 0.18s;
+  }
+  .btn-ghost:hover { border-color: var(--border-strong); color: var(--text-primary); }
+  .btn-ghost:disabled { opacity: 0.3; cursor: default; pointer-events: none; }
+  .btn-next {
+    background: var(--accent); border: 1px solid var(--accent);
+    padding: 10px 28px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px; font-weight: 400;
+    color: var(--selected-text);
+    cursor: pointer;
+    letter-spacing: 0.06em;
+    transition: opacity 0.18s;
+  }
+  .btn-next:hover { opacity: 0.82; }
+  .btn-next:disabled { opacity: 0.25; cursor: default; pointer-events: none; }
+
+  /* RESULT */
+  .result-wrap {
+    padding-top: 3.5rem;
+    animation: fadeUp 0.5s ease both;
+  }
+  .result-school-tag {
+    display: inline-block;
+    font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
+    border: 1px solid var(--border-strong);
+    padding: 5px 12px;
+    color: var(--text-secondary);
+    margin-bottom: 1.25rem;
+  }
+  .result-type {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(30px, 6vw, 44px);
+    font-weight: 400;
+    line-height: 1.15;
+    margin-bottom: 1.25rem;
+  }
+  .result-desc {
+    font-size: 15px; color: var(--text-secondary);
+    line-height: 1.75; font-weight: 300;
+    max-width: 500px;
+    margin-bottom: 2rem;
+  }
+  .traits {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    margin-bottom: 2.5rem;
+  }
+  .trait {
+    font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 6px 14px;
+    border: 1px solid var(--border-strong);
+    color: var(--text-secondary);
+    font-weight: 400;
+  }
+
+  /* SCORE BARS */
+  .scores-section { margin-bottom: 2.5rem; }
+  .section-label {
+    font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--text-muted); margin-bottom: 1.25rem;
+  }
+  .score-row {
+    display: flex; align-items: center; gap: 14px; margin-bottom: 12px;
+  }
+  .score-name { font-size: 13px; color: var(--text-secondary); min-width: 110px; font-weight: 300; }
+  .score-track {
+    flex: 1; height: 2px; background: var(--border);
+  }
+  .score-bar {
+    height: 100%; background: var(--accent);
+    transition: width 0.9s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .score-pct { font-size: 12px; color: var(--text-muted); min-width: 32px; text-align: right; }
+
+  /* DIVIDER */
+  .section-divider {
+    height: 1px; background: var(--border);
+    margin: 2.5rem 0;
+  }
+
+  /* PHILOSOPHER CARD */
+  .phil-block { margin-bottom: 2.5rem; }
+  .phil-name-large {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px; font-weight: 400;
+    margin-bottom: 4px;
+  }
+  .phil-dates {
+    font-size: 12px; color: var(--text-muted);
+    letter-spacing: 0.04em; margin-bottom: 1.25rem;
+  }
+  .phil-bio {
+    font-size: 14px; color: var(--text-secondary);
+    line-height: 1.75; font-weight: 300;
+    margin-bottom: 1.5rem;
+  }
+  .phil-quote {
+    font-family: 'Playfair Display', serif;
+    font-size: 17px; font-style: italic;
+    color: var(--text-primary);
+    line-height: 1.6;
+    padding: 1.25rem 1.5rem;
+    border-left: 2px solid var(--accent);
+    background: var(--accent-light);
+    margin-bottom: 1.5rem;
+  }
+  .match-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 1.25rem 1.5rem;
+  }
+  .match-label {
+    font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--text-muted); margin-bottom: 8px;
+  }
+  .match-text {
+    font-size: 14px; color: var(--text-secondary);
+    line-height: 1.7; font-weight: 300;
+  }
+
+  /* RESULT ACTIONS */
+  .result-actions { display: flex; gap: 12px; flex-wrap: wrap; padding-bottom: 4rem; }
+  .btn-outline {
+    background: none;
+    border: 1px solid var(--border-strong);
+    padding: 11px 22px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px; font-weight: 400;
+    color: var(--text-primary);
+    cursor: pointer;
+    letter-spacing: 0.04em;
+    transition: background 0.18s;
+  }
+  .btn-outline:hover { background: var(--accent-light); }
+  .btn-dark {
+    background: var(--accent);
+    border: 1px solid var(--accent);
+    padding: 11px 22px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px; font-weight: 400;
+    color: var(--selected-text);
+    cursor: pointer;
+    letter-spacing: 0.06em;
+    transition: opacity 0.18s;
+  }
+  .btn-dark:hover { opacity: 0.82; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 480px) {
+    .container { padding: 0 1.25rem; }
+    .intro-meta { gap: 1.5rem; }
+    .opt { padding: 14px 16px 14px 46px; font-size: 14px; }
+    .opt-letter { left: 14px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <span class="nav-logo">Philosopher Type</span>
+  <span class="nav-count" id="nav-count"></span>
+</nav>
+
+<main>
+  <div class="container">
+
+    <!-- INTRO -->
+    <div class="screen active" id="intro-screen">
+      <div class="intro-wrap">
+        <p class="eyebrow">Philosophy quiz</p>
+        <h1 class="intro-title">What kind of<br><em>thinker</em> are you?</h1>
+        <p class="intro-body">Twelve questions on ethics, reality, knowledge, and the good life. Discover which philosophical tradition fits how you see the world — and which great thinker you think most like.</p>
+        <div class="intro-divider"></div>
+        <div class="intro-meta">
+          <div class="intro-stat">
+            <span class="intro-stat-num">12</span>
+            <span class="intro-stat-label">Questions</span>
+          </div>
+          <div class="intro-stat">
+            <span class="intro-stat-num">8</span>
+            <span class="intro-stat-label">Schools</span>
+          </div>
+          <div class="intro-stat">
+            <span class="intro-stat-num">8</span>
+            <span class="intro-stat-label">Philosophers</span>
+          </div>
+        </div>
+        <button class="btn-start" onclick="startQuiz()">
+          Begin the inquiry <span class="arrow">→</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- QUESTION -->
+    <div class="screen" id="question-screen">
+      <div class="progress-wrap">
+        <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+        <span class="progress-label" id="progress-label">Question 1 of 12</span>
+      </div>
+      <div class="q-wrap" id="q-wrap">
+        <p class="q-category" id="q-category"></p>
+        <h2 class="q-text" id="q-text"></h2>
+        <div class="options" id="options"></div>
+        <div class="nav-btns">
+          <button class="btn-ghost" id="back-btn" onclick="goBack()">← Back</button>
+          <button class="btn-next" id="next-btn" onclick="goNext()" disabled>Continue →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESULT -->
+    <div class="screen" id="result-screen">
+      <div class="result-wrap">
+        <div class="result-school-tag" id="res-school"></div>
+        <h1 class="result-type" id="res-type"></h1>
+        <p class="result-desc" id="res-desc"></p>
+        <div class="traits" id="res-traits"></div>
+
+        <div class="scores-section">
+          <p class="section-label">Your philosophical breakdown</p>
+          <div id="score-bars"></div>
+        </div>
+
+        <div class="section-divider"></div>
+
+        <p class="section-label" style="margin-bottom:1.5rem">Your philosopher match</p>
+        <div class="phil-block" id="phil-block"></div>
+
+        <div class="result-actions">
+          <button class="btn-outline" onclick="restartQuiz()">Retake quiz</button>
+          <button class="btn-dark" id="explore-btn">Explore this philosopher →</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<script>
+const questions = [
+  { category: "Ethics", text: "When you face a difficult moral decision, what guides you most?", options: [
+    { text: "The outcome — what will produce the most good for the most people?", scores: { utilitarian: 3, empiricist: 1 } },
+    { text: "Duty — there are rules that must not be broken regardless of consequences.", scores: { rationalist: 3, stoic: 1 } },
+    { text: "Virtue — what would a person of good character do here?", scores: { virtue: 3, stoic: 1 } },
+    { text: "My gut. Moral intuition runs deeper than any theory.", scores: { existentialist: 2, empiricist: 1 } }
+  ]},
+  { category: "Epistemology", text: "What is knowledge, at its root?", options: [
+    { text: "Sensory experience — we only know what we can observe and test.", scores: { empiricist: 3, utilitarian: 1 } },
+    { text: "Reason — the mind contains truths that experience merely confirms.", scores: { rationalist: 3, idealist: 1 } },
+    { text: "A tool for living — knowledge is what helps us navigate the world.", scores: { pragmatist: 3, utilitarian: 1 } },
+    { text: "A construction — we make sense of a chaotic reality through frameworks.", scores: { existentialist: 2, idealist: 1 } }
+  ]},
+  { category: "The Good Life", text: "What is the most important thing in a good life?", options: [
+    { text: "Tranquility — freedom from anxiety and desire.", scores: { stoic: 3, virtue: 1 } },
+    { text: "Creating authentic meaning for yourself.", scores: { existentialist: 3, pragmatist: 1 } },
+    { text: "Living virtuously and in accordance with your nature.", scores: { virtue: 3, stoic: 1 } },
+    { text: "Maximizing pleasure while minimizing suffering.", scores: { utilitarian: 3, empiricist: 1 } }
+  ]},
+  { category: "Metaphysics", text: "Reality, at its deepest level, is...", options: [
+    { text: "Material. Matter and energy, nothing more, nothing less.", scores: { empiricist: 3, utilitarian: 1 } },
+    { text: "Fundamentally mental or spiritual — the physical world is secondary.", scores: { idealist: 3, rationalist: 1 } },
+    { text: "A stage where conscious beings make free choices that define everything.", scores: { existentialist: 3, pragmatist: 1 } },
+    { text: "Governed by rational laws that the mind can uncover.", scores: { rationalist: 3, idealist: 1 } }
+  ]},
+  { category: "Politics", text: "How should society be organized?", options: [
+    { text: "Around the greatest happiness of the greatest number.", scores: { utilitarian: 3, pragmatist: 1 } },
+    { text: "By rational principles everyone could freely agree to.", scores: { rationalist: 3, virtue: 1 } },
+    { text: "To cultivate virtuous citizens and flourishing communities.", scores: { virtue: 3, stoic: 1 } },
+    { text: "To protect individual freedom — structure beyond that is suspect.", scores: { existentialist: 3, pragmatist: 1 } }
+  ]},
+  { category: "Science", text: "When you read a scientific study, your first instinct is:", options: [
+    { text: "Trust it — empirical evidence is the gold standard.", scores: { empiricist: 3, utilitarian: 1 } },
+    { text: "Ask what assumptions underlie the methodology.", scores: { rationalist: 2, pragmatist: 1 } },
+    { text: "Ask what it means for how we should live.", scores: { pragmatist: 3, utilitarian: 1 } },
+    { text: "Appreciate it, but science doesn't answer the deepest questions.", scores: { existentialist: 2, idealist: 2 } }
+  ]},
+  { category: "Free Will", text: "Free will — do you believe in it?", options: [
+    { text: "Fully. We are radically free and responsible for who we become.", scores: { existentialist: 3, virtue: 1 } },
+    { text: "Yes, grounded in reason — we can choose to act rationally.", scores: { rationalist: 3, stoic: 1 } },
+    { text: "The question is less about freedom than acting according to your nature.", scores: { stoic: 3, virtue: 1 } },
+    { text: "It's complicated — I'm skeptical of strong claims either way.", scores: { empiricist: 2, pragmatist: 2 } }
+  ]},
+  { category: "Psychology", text: "When you're struggling emotionally, what helps most?", options: [
+    { text: "Stepping back, reminding yourself what's in your control.", scores: { stoic: 3, rationalist: 1 } },
+    { text: "Finding practical action — doing something that moves you forward.", scores: { pragmatist: 3, utilitarian: 1 } },
+    { text: "Confronting the feeling honestly and sitting with it.", scores: { existentialist: 3, virtue: 1 } },
+    { text: "Seeking wisdom from great thinkers and traditions.", scores: { virtue: 2, rationalist: 1 } }
+  ]},
+  { category: "Tradition", text: "What do you think of tradition and inherited wisdom?", options: [
+    { text: "Tradition embodies centuries of human learning — respect it.", scores: { virtue: 3, stoic: 1 } },
+    { text: "Test it empirically. If it works, keep it; if not, discard it.", scores: { empiricist: 3, pragmatist: 1 } },
+    { text: "Each person must determine what is true for themselves.", scores: { existentialist: 3, pragmatist: 1 } },
+    { text: "It has a role, but reason must always take precedence.", scores: { rationalist: 3, idealist: 1 } }
+  ]},
+  { category: "Famous Quotes", text: "Which statement do you find most compelling?", options: [
+    { text: "\"I think, therefore I am.\" — Descartes", scores: { rationalist: 3, idealist: 1 } },
+    { text: "\"The unexamined life is not worth living.\" — Socrates", scores: { virtue: 3, stoic: 1 } },
+    { text: "\"Existence precedes essence.\" — Sartre", scores: { existentialist: 3, pragmatist: 1 } },
+    { text: "\"The greatest good for the greatest number.\" — Bentham", scores: { utilitarian: 3, empiricist: 1 } }
+  ]},
+  { category: "Disagreement", text: "When you disagree with someone, you tend to:", options: [
+    { text: "Lay out a logical argument — reason should settle the question.", scores: { rationalist: 3, utilitarian: 1 } },
+    { text: "Ask about their experience — where are they coming from?", scores: { empiricist: 2, virtue: 2 } },
+    { text: "Look for what's practically useful in both views.", scores: { pragmatist: 3, utilitarian: 1 } },
+    { text: "Hold firm — you have to live by your own convictions.", scores: { existentialist: 3, stoic: 1 } }
+  ]},
+  { category: "Emotion & Reason", text: "What is the role of emotion in good thinking?", options: [
+    { text: "Emotions distort judgment. Reason should govern.", scores: { stoic: 3, rationalist: 1 } },
+    { text: "Emotions are data — they often point to something real.", scores: { empiricist: 2, virtue: 2 } },
+    { text: "Emotion is where authentic human experience lives.", scores: { existentialist: 3, pragmatist: 1 } },
+    { text: "Cultivated emotions like compassion are central to virtue.", scores: { virtue: 3, utilitarian: 1 } }
+  ]}
+];
+
+const schoolNames = {
+  rationalist: "Rationalism", empiricist: "Empiricism", utilitarian: "Utilitarianism",
+  virtue: "Virtue Ethics", stoic: "Stoicism", existentialist: "Existentialism",
+  pragmatist: "Pragmatism", idealist: "Idealism"
+};
+
+const results = {
+  rationalist: {
+    type: "The Rationalist", school: "Rationalism",
+    desc: "You believe the mind is the primary tool for uncovering truth. Logic, structure, and systematic thinking are your natural habitat. You distrust what cannot be reasoned through — experience alone feels insufficient.",
+    traits: ["Systematic", "Logical", "Principled", "Structured"],
+    phil: {
+      name: "Immanuel Kant", dates: "1724–1804 · Königsberg, Prussia",
+      bio: "Kant revolutionized philosophy by arguing that the mind actively structures experience rather than passively receiving it. He believed morality could be derived from pure reason alone — his Categorical Imperative holds that we should act only by principles we could will to be universal laws. He asked: what must be true for knowledge and morality to be possible at all?",
+      quote: "Act only according to that maxim whereby you can at the same time will that it should become a universal law.",
+      match: "Like Kant, you approach the world through reason and universal principles. You believe there are structures underlying reality that the mind — not just the senses — can access."
+    }
+  },
+  empiricist: {
+    type: "The Empiricist", school: "Empiricism",
+    desc: "Evidence is everything to you. You trust what can be observed, tested, and measured. Abstract theories that float free of experience leave you cold — show me the data.",
+    traits: ["Evidence-driven", "Skeptical", "Curious", "Grounded"],
+    phil: {
+      name: "David Hume", dates: "1711–1776 · Edinburgh, Scotland",
+      bio: "Hume was the most radical of the British empiricists, arguing that all knowledge derives from sensory experience. He famously dismantled the concept of causation — we don't observe causes, only sequences — and was deeply skeptical of metaphysical claims we cannot ground in experience. He also challenged religion, miracles, and the idea of a persistent self.",
+      quote: "A wise man proportions his belief to the evidence.",
+      match: "Like Hume, you trust observation over theory. You're skeptical of claims that can't be grounded in experience, and you think careful reasoning means knowing what we cannot know."
+    }
+  },
+  utilitarian: {
+    type: "The Utilitarian", school: "Utilitarianism",
+    desc: "You're a consequentialist at heart. What matters is impact — real effects on real beings. You approach ethics practically, always asking: what actually produces the best outcome?",
+    traits: ["Consequentialist", "Practical", "Fair-minded", "Outcome-focused"],
+    phil: {
+      name: "John Stuart Mill", dates: "1806–1873 · London, England",
+      bio: "Mill refined Bentham's utilitarianism, arguing that not all pleasures are equal — intellectual and moral pleasures are higher than physical ones. In On Liberty, he argued society should only limit freedom when it prevents harm to others. He championed women's rights decades before it was respectable.",
+      quote: "It is better to be Socrates dissatisfied than a fool satisfied.",
+      match: "Like Mill, you believe ethics is about producing genuine human flourishing — and that good thinking requires taking everyone's wellbeing seriously, not just the majority."
+    }
+  },
+  virtue: {
+    type: "The Virtue Ethicist", school: "Virtue Ethics",
+    desc: "Character is everything to you. Rather than rules or outcomes, you ask: what kind of person am I becoming? Ethics, for you, is about cultivating wisdom, courage, justice, and temperance.",
+    traits: ["Character-focused", "Reflective", "Community-minded", "Wise"],
+    phil: {
+      name: "Aristotle", dates: "384–322 BC · Stagira, Greece",
+      bio: "Aristotle was perhaps history's most comprehensive thinker, making foundational contributions to logic, biology, politics, ethics, and metaphysics. His ethics centers on eudaimonia — human flourishing — achieved through developing virtues as stable character traits. He argued that humans are by nature social animals who flourish in community.",
+      quote: "We are what we repeatedly do. Excellence, then, is not an act but a habit.",
+      match: "Like Aristotle, you believe that living well is about becoming a certain kind of person — and that this happens through practice, honest self-examination, and community."
+    }
+  },
+  stoic: {
+    type: "The Stoic", school: "Stoicism",
+    desc: "You have a gift for perspective. You distinguish clearly between what is and isn't in your control — and you focus your energy only on the former. Emotions are real, but you don't let them govern you.",
+    traits: ["Disciplined", "Clear-headed", "Resilient", "Principled"],
+    phil: {
+      name: "Marcus Aurelius", dates: "121–180 AD · Rome",
+      bio: "Marcus Aurelius was Roman Emperor and a devoted Stoic philosopher. His private journal, Meditations, was never intended for publication. It shows a man constantly reminding himself of Stoic principles: focus only on what is in your control, treat others with justice, face death without fear. He remains the most widely read Stoic today.",
+      quote: "You have power over your mind — not outside events. Realize this, and you will find strength.",
+      match: "Like Marcus, you've internalized the Stoic insight: distress comes from our judgments, not from events. You meet difficulty with equanimity rather than reaction."
+    }
+  },
+  existentialist: {
+    type: "The Existentialist", school: "Existentialism",
+    desc: "Freedom and authenticity define you. You resist inherited identities and ready-made meanings. Life has no preset script — you must write your own. This is frightening and exhilarating in equal measure.",
+    traits: ["Authentic", "Independent", "Courageous", "Intense"],
+    phil: {
+      name: "Jean-Paul Sartre", dates: "1905–1980 · Paris, France",
+      bio: "Sartre was the central figure of 20th-century existentialism. His core claim — existence precedes essence — means that humans have no pre-given nature or purpose. We simply exist, and then define ourselves through choices. This makes radical freedom both our greatest burden and defining feature. He argued that bad faith — pretending we have no choice — is the deepest form of self-deception.",
+      quote: "Man is condemned to be free. Once thrown into the world, he is responsible for everything he does.",
+      match: "Like Sartre, you take freedom seriously — as a responsibility, not just a privilege. You resist defining yourself by categories others impose, and you hold yourself accountable for who you're becoming."
+    }
+  },
+  pragmatist: {
+    type: "The Pragmatist", school: "Pragmatism",
+    desc: "Truth, for you, is what works. Philosophy shouldn't live in the clouds — it should change how we act. You're skeptical of abstract systems and drawn to ideas that make a practical difference.",
+    traits: ["Action-oriented", "Flexible", "Problem-solving", "Experimental"],
+    phil: {
+      name: "William James", dates: "1842–1910 · New York, USA",
+      bio: "James founded American pragmatism and pioneered the science of psychology. He argued that ideas are tools — judged not by abstract correspondence to reality, but by their practical consequences. His Varieties of Religious Experience approached belief empirically. He championed pluralism and individual experience, believing that philosophy should transform how we live.",
+      quote: "Act as if what you do makes a difference. It does.",
+      match: "Like James, you're drawn to ideas that actually work in the world. You're suspicious of grand theories that don't cash out in lived experience — philosophy, for you, is about making better choices."
+    }
+  },
+  idealist: {
+    type: "The Idealist", school: "Idealism",
+    desc: "You sense that the material world isn't the whole story. Mind, spirit, consciousness — these feel primary to you. Ideas shape reality more than we usually admit, and there's something deeper beneath the surface.",
+    traits: ["Reflective", "Spiritual", "Conceptual", "Depth-seeking"],
+    phil: {
+      name: "G.W.F. Hegel", dates: "1770–1831 · Stuttgart, Germany",
+      bio: "Hegel is among the most ambitious of all philosophers. He argued that reality itself is the unfolding of Geist — Mind or Spirit — working through history toward self-understanding. His dialectical method shows how contradiction drives progress. He profoundly influenced Marx, existentialism, and twentieth-century continental philosophy.",
+      quote: "The real is the rational and the rational is the real.",
+      match: "Like Hegel, you sense that the surface of things doesn't exhaust reality. You're drawn to the deep structures — conceptual, spiritual, historical — that shape what appears to us as the world."
+    }
+  }
+};
+
+let current = 0;
+let answers = [];
+let scores = {};
+let topKey = '';
+
+function startQuiz() {
+  Object.keys(schoolNames).forEach(k => scores[k] = 0);
+  document.getElementById('intro-screen').classList.remove('active');
+  document.getElementById('question-screen').classList.add('active');
+  renderQ();
+}
+
+function renderQ() {
+  const q = questions[current];
+  const pct = (current / questions.length) * 100;
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-label').textContent = `Question ${current + 1} of ${questions.length}`;
+  document.getElementById('nav-count').textContent = `${current + 1} / ${questions.length}`;
+  document.getElementById('q-category').textContent = q.category;
+  document.getElementById('q-text').textContent = q.text;
+  document.getElementById('back-btn').disabled = current === 0;
+  document.getElementById('next-btn').disabled = answers[current] === undefined;
+
+  const wrap = document.getElementById('q-wrap');
+  wrap.style.animation = 'none';
+  void wrap.offsetWidth;
+  wrap.style.animation = 'fadeUp 0.35s ease both';
+
+  const letters = ['A', 'B', 'C', 'D'];
+  const opts = document.getElementById('options');
+  opts.innerHTML = '';
+  q.options.forEach((o, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt' + (answers[current] === i ? ' selected' : '');
+    btn.innerHTML = `<span class="opt-letter">${letters[i]}</span>${o.text}`;
+    btn.onclick = () => select(i);
+    opts.appendChild(btn);
+  });
+}
+
+function select(i) {
+  answers[current] = i;
+  document.querySelectorAll('.opt').forEach((b, idx) => {
+    b.classList.toggle('selected', idx === i);
+  });
+  document.getElementById('next-btn').disabled = false;
+}
+
+function goBack() {
+  if (current > 0) { current--; renderQ(); }
+}
+
+function goNext() {
+  if (answers[current] === undefined) return;
+  if (current < questions.length - 1) {
+    current++;
+    renderQ();
+  } else {
+    showResult();
+  }
+}
+
+function showResult() {
+  answers.forEach((ans, qi) => {
+    Object.entries(questions[qi].options[ans].scores).forEach(([k, v]) => { scores[k] += v; });
+  });
+
+  topKey = Object.entries(scores).sort((a, b) => b[1] - a[1])[0][0];
+  const r = results[topKey];
+
+  document.getElementById('question-screen').classList.remove('active');
+  document.getElementById('result-screen').classList.add('active');
+  document.getElementById('nav-count').textContent = '';
+  document.getElementById('res-school').textContent = r.school;
+  document.getElementById('res-type').textContent = r.type;
+  document.getElementById('res-desc').textContent = r.desc;
+  document.getElementById('res-traits').innerHTML = r.traits.map(t => `<span class="trait">${t}</span>`).join('');
+
+  const maxS = Math.max(...Object.values(scores));
+  const top5 = Object.entries(scores).sort((a,b) => b[1]-a[1]).slice(0,5);
+  document.getElementById('score-bars').innerHTML = top5.map(([k,v]) => {
+    const pct = maxS > 0 ? Math.round((v/maxS)*100) : 0;
+    return `<div class="score-row">
+      <span class="score-name">${schoolNames[k]}</span>
+      <div class="score-track"><div class="score-bar" style="width:0" data-w="${pct}%"></div></div>
+      <span class="score-pct">${pct}%</span>
+    </div>`;
+  }).join('');
+
+  setTimeout(() => {
+    document.querySelectorAll('.score-bar').forEach(el => { el.style.width = el.dataset.w; });
+  }, 120);
+
+  const p = r.phil;
+  document.getElementById('phil-block').innerHTML = `
+    <div class="phil-name-large">${p.name}</div>
+    <div class="phil-dates">${p.dates}</div>
+    <div class="phil-bio">${p.bio}</div>
+    <div class="phil-quote">${p.quote}</div>
+    <div class="match-box">
+      <div class="match-label">Why you match</div>
+      <div class="match-text">${p.match}</div>
+    </div>`;
+
+  const wikiSlug = p.name.replace(/\./g, '').replace(/\s+/g, '_');
+  document.getElementById('explore-btn').onclick = () => {
+    window.open(`https://en.wikipedia.org/wiki/${wikiSlug}`, '_blank');
+  };
+}
+
+function restartQuiz() {
+  current = 0; answers = []; scores = {};
+  Object.keys(schoolNames).forEach(k => scores[k] = 0);
+  document.getElementById('result-screen').classList.remove('active');
+  document.getElementById('intro-screen').classList.add('active');
+  document.getElementById('nav-count').textContent = '';
+  document.getElementById('progress-fill').style.width = '0%';
+}
+</script>
+</body>
+</html>
